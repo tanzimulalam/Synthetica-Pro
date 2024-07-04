@@ -1,0 +1,21 @@
+.generate-visualization {
+    background-color: #1a1a2e;
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  
+  .generate-visualization h2 {
+    color: #00ffff;
+    margin-bottom: 1rem;
+  }
+  
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-size: 1.5rem;
+    color: #00ffff;
+    background-color: #1a1a2e;
+  }
