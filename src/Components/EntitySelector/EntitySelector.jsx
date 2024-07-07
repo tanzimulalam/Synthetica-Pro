@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './EntitySelector.css';
 
 const entities = [
@@ -36,6 +37,9 @@ const AnimatedBackground = () => (
 const EntitySelector = () => {
   const [selectedEntities, setSelectedEntities] = useState({});
   const [counts, setCounts] = useState({});
+  const [stixBundle, setStixBundle] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const toggleEntity = (entity) => {
@@ -52,15 +56,45 @@ const EntitySelector = () => {
     }));
   };
 
-  const generateGraph = () => {
+  const generateGraph = async () => {
+    setLoading(true);
+    setError(null);
+    setStixBundle(null);
+
     const selectedCounts = Object.entries(selectedEntities)
       .filter(([, selected]) => selected)
       .reduce((acc, [entity]) => {
-        acc[entity] = counts[entity] || 0;
+        acc[entity.toLowerCase().replace(' ', '-')] = counts[entity] || 0;
         return acc;
       }, {});
-    
-    navigate('/generate', { state: { counts: selectedCounts } });
+
+    const formData = new FormData();
+    Object.entries(selectedCounts).forEach(([key, value]) => {
+      formData.append(key + '-count', value);
+    });
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/generate-graph', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setStixBundle(JSON.parse(response.data.stix_bundle));
+    } catch (err) {
+      setError('An error occurred while generating the graph. Please try again.');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyJson = () => {
+    navigator.clipboard.writeText(JSON.stringify(stixBundle, null, 2));
+    alert('JSON copied to clipboard!');
+  };
+
+  const openStixVisualizer = () => {
+    const visualizerUrl = 'https://oasis-open.github.io/ctim-visualizer/';
+    const encodedJson = encodeURIComponent(JSON.stringify(stixBundle));
+    window.open(`${visualizerUrl}?data=${encodedJson}`, '_blank');
   };
 
   return (
@@ -104,8 +138,21 @@ const EntitySelector = () => {
           </div>
         </div>
         <div className="actions">
-          <button className="generate-btn" onClick={generateGraph}>GENERATE GRAPH</button>
+          <button className="generate-btn" onClick={generateGraph} disabled={loading}>
+            {loading ? 'GENERATING...' : 'GENERATE GRAPH'}
+          </button>
         </div>
+        {error && <div className="error-message">{error}</div>}
+        {stixBundle && (
+          <div className="stix-bundle">
+            <h3>Generated STIX Bundle</h3>
+            <pre>{JSON.stringify(stixBundle, null, 2)}</pre>
+            <div className="bundle-actions">
+              <button className="action-btn" onClick={copyJson}>Copy JSON</button>
+              <button className="action-btn" onClick={openStixVisualizer}>Open STIX Visualizer</button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
