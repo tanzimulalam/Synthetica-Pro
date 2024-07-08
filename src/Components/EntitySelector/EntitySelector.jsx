@@ -92,7 +92,7 @@ const EntitySelector = () => {
   };
 
   const openStixVisualizer = () => {
-    const visualizerUrl = 'https://oasis-open.github.io/ctim-visualizer/';
+    const visualizerUrl = 'https://oasis-open.github.io/cti-stix-visualization/';
     const encodedJson = encodeURIComponent(JSON.stringify(stixBundle));
     window.open(`${visualizerUrl}?data=${encodedJson}`, '_blank');
   };
