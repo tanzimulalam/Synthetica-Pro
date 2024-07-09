@@ -4,12 +4,12 @@ import axios from 'axios';
 import './EntitySelector.css';
 
 const entities = [
-  { category: 'Actors', items: ['Threat Actor', 'Identity'] },
+  { category: 'Profile & Persona', items: ['Threat Actor', 'Identity'] },
   { category: 'Artifacts', items: ['Malware', 'Tool'] },
-  { category: 'Behaviors', items: ['Attack Pattern', 'Campaign', 'Course of Action'] },
-  { category: 'Intel', items: ['Indicator', 'Observed Data', 'Report'] },
-  { category: 'Infrastructure', items: ['Infrastructure', 'Location'] },
-  { category: 'Analysis', items: ['Intrusion Set', 'Malware Analysis', 'Opinion'] },
+  { category: 'Tactics & Operations', items: ['Attack Pattern', 'Campaign', 'Course of Action'] },
+  { category: 'Possible Intels', items: ['Indicator', 'Report'] },
+  { category: 'Frameworks & Geolocation Data', items: ['Infrastructure', 'Location'] },
+  { category: 'Forensics & Countermeasures', items: ['Intrusion Set', 'Malware Analysis', 'Opinion', 'Vulnerability'] },
 ];
 
 const AnimatedBackground = () => (
